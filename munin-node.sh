@@ -21,7 +21,7 @@ NTP_PEER="pool.ntp.org";
 PLUGINPATTERN=$(dirname $0)"/munin-node-plugin.d/*"
 
 # Remove unwanted plugins from this list
-PLUGINS="df cpu if_ if_err_ users load memory processes swap uptime ipmi_temp hdd_temp plugindir_"
+PLUGINS="df cpu if_ if_err_ users load memory processes swap uptime plugindir_"
 # ===== LIB FUNCTIONS =====
 clean_fieldname() {
   echo "$@" | sed -e 's/^[^A-Za-z_]/_/' -e 's/[^A-Za-z0-9_]/_/g'
@@ -138,7 +138,7 @@ fetch_cpu() {
   fi
 }
 config_if() {
-
+   ethname="$1"
 # Uncomment to rename network interfaces
 #  if [ $1 == "eth0" ]; then
 #    ethname="eth1"
@@ -163,11 +163,6 @@ config_if() {
   echo "up.min 0"
   echo "up.negative down"
   echo "up.cdef up,8,*"
-  if ethtool $1 | grep -q Speed; then
-    MAX=$(($(ethtool $1 | grep Speed | sed -e 's/[[:space:]]\{1,\}/ /g' -e 's/^ //' -e 's/M.*//' | cut -d\  -f2) * 1000000))
-    echo "up.max $MAX"
-    echo "down.max $MAX"
-  fi
 }
 fetch_if() {
   IINFO=$(grep "$1:" /proc/net/dev | cut -d: -f2 | sed -e 's/  / /g')
@@ -175,7 +170,7 @@ fetch_if() {
   echo "up.value" $(echo $IINFO | cut -d\  -f9)
 }
 config_if_err() {
-
+  ethname="$1"
 # Uncomment to rename network interfaces
 #  if [ $1 == "eth0" ]; then
 #    ethname="eth1"

@@ -1,50 +1,24 @@
 muninlite
 =========
 
-Muninlite for Qnap
+Muninlite for EdgeOS
 
-At the moment there is no IPKG available to install Munin-Node on your QNAP-Device. Fortunately you can use muninlite (http://sourceforge.net/projects/muninlite/). Anyway muninlite doesn't support QNAP-Devices very well, so I made some tweaks. You can either use the patch file and get muninlite directly from SourceForge, or you can use the complete Script from this repository. The Script is based on muninlite 1.0.4 (with all plugins enabled) and was tested on a QNAP TS-419 Pro.
+At the moment there is no packge available to install Munin-Node on EdgeOS devices. Fortunately you can use muninlite (http://sourceforge.net/projects/muninlite/). This script extends the QNAP-custom verson by at https://github.com/gpkvt/muninlite to make some small changes.
 
 Installation
 ============
 
-1. Copy the Script to ```/share/MD0_DATA/.qpkg/Optware/local/munin/```
+1. Copy the Script to ```/config/scripts/munin-node```
 
-2. Install xinetd (```ipkg install xinetd```)
+2. Create a new non-administrator user called ```munin``` either in the CLI or Web UI
 
-3. Add the following line to ```/etc/services```:
+3. Generate an ssh key for the user running Munin on your master server (if you haven't done so already) and add the public key to the user created in step #2
+
+4. Add the node config to the ```munin.conf``` on the Munin master:
+```
+[my-edge-os-device]
+    address ssh://USER@HOST /config/scripts/munin-node.sh
+    use_node_name yes
 
 ```
-munin           4949/tcp        lrrd            # Munin
-```
-
-4\. Add the following to ```/opt/etc/xinetd.conf```:
-
-```
-munin   stream  tcp     nowait  root    /opt/local/munin/munin-node
-```
-
-5\. Create ```/opt/etc/xinetd.d/munin```:
-
-```
-service munin
-{
-        socket_type     = stream
-        protocol        = tcp
-        wait            = no
-        user            = admin
-        group           = administrators
-        #only_from       = 10.42.42.25
-        server          = /opt/local/munin/munin-node
-        disable         = no
-}
-```
-6\. Restart xinetd (```killall xinetd && /opt/sbin/xinetd```)
-
-7\. Configure a Munin-Machine to gather data from the QNAP-Device (as you would with any munin-node-Client).
-
-Troubleshooting
-===============
-
-Use the xinetd-Debugmode: ```/opt/sbin/xinetd -d```
 
