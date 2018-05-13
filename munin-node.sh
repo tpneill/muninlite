@@ -21,7 +21,7 @@ NTP_PEER="pool.ntp.org";
 PLUGINPATTERN=$(dirname $0)"/munin-node-plugin.d/*"
 
 # Remove unwanted plugins from this list
-PLUGINS="df cpu if_ if_err_ users load memory processes swap uptime plugindir_"
+PLUGINS="df cpu if_ if_err_ users load memory processes uptime plugindir_"
 # ===== LIB FUNCTIONS =====
 clean_fieldname() {
   echo "$@" | sed -e 's/^[^A-Za-z_]/_/' -e 's/[^A-Za-z0-9_]/_/g'
@@ -35,10 +35,10 @@ graph_args --upper-limit 100 -l 0
 graph_vlabel %
 graph_category disk
 graph_info This graph shows disk usage on the machine."
-  for PART in $(df | grep '^/' | awk '{print $6}' | sed 1d)
+  for PART in $(df 2>/dev/null | awk '{print $6}' | sed 1d)
   do
     PINFO=$(df $PART | tail -1);
-    PNAME=$(echo $PINFO | cut -d\  -f1 | sed 's/\//_/g')
+    PNAME=$(echo $PINFO | awk '{print $1}' | sed 's/\//_/g')
     echo "$PNAME.label $PART"
     echo "$PNAME.info $PNAME -> $PART"
     echo "$PNAME.warning 92"
@@ -46,11 +46,11 @@ graph_info This graph shows disk usage on the machine."
   done
 }
 fetch_df() {
-  for PART in $(df | grep '^/' | awk '{print $6}' | sed 1d)
+  for PART in $(df 2>/dev/null | awk '{print $6}' | sed 1d)
   do
     PINFO=$(df $PART | tail -1);
-    PNAME=$(echo $PINFO | cut -d\  -f1 | sed 's/[\/.-]/_/g')
-    echo "$PNAME.value" $(echo $PINFO | cut -f5 -d\  | sed -e 's/\%//g')
+    PNAME=$(echo $PINFO | awk '{print $1}' | sed 's/[\/.-]/_/g')
+    echo "$PNAME.value" $(echo $PINFO | awk '{print $5}'  | sed -e 's/\%//g')
   done
 }
 config_cpu() {
