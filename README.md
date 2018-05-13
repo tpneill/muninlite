@@ -3,12 +3,12 @@ muninlite
 
 Muninlite for EdgeOS
 
-At the moment there is no packge available to install Munin-Node on EdgeOS devices. Fortunately you can use muninlite (http://sourceforge.net/projects/muninlite/). This script extends the QNAP-custom verson by at https://github.com/gpkvt/muninlite to make some small changes.
+At the moment there is no packge available to install munin-node on EdgeOS devices. Fortunately you can use muninlite at http://sourceforge.net/projects/muninlite/ - this version extends the QNAP-custom verson at https://github.com/gpkvt/muninlite to make some small changes.
 
 Installation
 ============
 
-1. Copy the Script to ```/config/scripts/munin-node```
+1. Copy the Script to ```/config/scripts/munin-node.sh```
 
 2. Create a new non-administrator user called ```munin``` either in the CLI or Web UI
 
@@ -17,7 +17,7 @@ Installation
 4. Add the node config to the ```munin.conf``` on the Munin master:
 ```
 [my-edge-os-device]
-    address ssh://USER@HOST /config/scripts/munin-node.sh
+    address ssh://munin@HOST /config/scripts/munin-node.sh
     use_node_name yes
 
 ```
